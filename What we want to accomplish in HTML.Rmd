@@ -1,0 +1,202 @@
+---
+title: "What we want to accomplish in HTML"
+author: "Avril Metcalfe-Roach"
+date: "2026-06-30"
+output: html_document
+---
+
+This R script is meant to demonstrate the type of functionality we'd like the webpage to have. It's just to demonstrate the general ideas - other formats are completely okay.
+
+```{r load_datasets}
+library(tidyverse)
+
+# List of all existing projects and datasets
+database = read.csv('Project_Database.csv')
+```
+
+# STEP 1 - SEARCH FUNCTION
+
+This is the most basic component - the HTML will need to search the database and return the matching rows. You'll need to use Javascript for this (HTML provides the page layout, Javascript handles functionality, and CSS makes things look nice).
+
+Next week's goal: create an index.html file that can do this using Javascript. Javascript can be added to the HTML file or kept in a separate javascript file (I find this to be easier, but it's up to your preference). Unfortunately we can't use R as the backend for the webpage - Github doesn't support it. R Shiny apps would be a possibility, but they're more complicated to set up and use, and things that aren't easy to use end up not being used.
+
+Anyway, I'll create a function that takes a search term and returns a list of projects and datasets that match that term.
+
+```{r search_function}
+
+# Instructions: "Please enter a DOI, data accession, dataset name, or paper title to search for relevant projects and datasets."
+
+# FYI for the column headings:
+# Paper_ refers to actual manuscripts, Data_ refers to the dataset itself.
+
+search_projects = function(search_term) {
+  # search_term='anemia' # For testing
+  # Filter the database for projects that match the search term
+  matching_projects = database %>%
+    filter(grepl(search_term, Paper_Title, ignore.case = TRUE) | 
+           grepl(search_term, Data_Accession, ignore.case = TRUE) | 
+           grepl(search_term, Data_Name, ignore.case = TRUE))
+
+  return(matching_projects)
+}
+
+# Search by part of a UJEMI paper title
+search_projects('Smoking in the Context of Westernized')
+# Search using part of the data accession
+search_projects('417579')
+# Search using the dataset name
+search_projects('anemia')
+# Search using a term that should show up across multiple datasets
+search_projects('microbiota')
+
+# Can add other search terms as needed, but these are probably fine for most people.
+```
+
+# STEP 2 - DISPLAY RESULTS NICELY
+
+The database file is kind of ugly, so let's return results that are formatted nicely.
+First the search_term command is run, then the output is wrangled.
+This is just an example of how we might want to format things - I'm not sure what's best off the top of my head. We probably want something like Google Scholar, where the key info is displayed and the user can click on links to get more info.
+
+If there's time later on: I haven't done it here, but it would be nice to eventually group the results by dataset to reduce repetition/make it easier to parse at a glance.
+
+```{r display_results}
+display_results = function(search_term) {
+  results = search_projects(search_term)
+  
+  if (nrow(results) == 0) {
+    return("No matching projects or datasets found.")
+  } else {
+    # Create a nicely formatted output
+    output = paste0("<h3>Search Results for '", search_term, "':</h3>")
+    output = paste0(output, "<ul>")
+    
+    # This pastes all the most important info in HTML format
+    for (i in 1:nrow(results)) {
+      output = paste0(output, 
+                      "<li><strong>Dataset Accession:</strong> ", results$Data_Accession[i],  
+                      " | <strong>Dataset Name:</strong> ", results$Data_Name[i],
+                      " | <a href=",results$Data_Metadata[i],"><strong>Link to metadata</strong></a>",
+                      "<br>",
+                      "<strong>Manuscript Title:</strong> ", results$Paper_Title[i],
+                      "<br>",
+                      "<strong>Manuscript Year:</strong> ", results$Paper_Year[i],
+                      " | <strong>Manuscript Type:</strong> ", results$Paper_Type[i],
+                      " | <a href=",results$Paper_Link[i],"><strong>Link to paper</strong></a></li>",
+                      "<br>")
+    }
+    
+    output = paste0(output, "</ul>")
+    # This will display it as HTML below so that you can see what each piece does.
+    html_output = htmltools::HTML(output)
+    
+    return(html_output)
+  }
+}
+
+# See what it looks like now!
+
+# Search by part of a UJEMI paper title
+display_results('Smoking in the Context of Westernized')
+# Search using part of the data accession
+display_results('417579')
+# Search using the dataset name
+display_results('anemia')
+# Search using a term that should show up across multiple datasets
+display_results('microbiota')
+```
+
+# STEP 3 - ADDING LINKS TO THE METADATA
+
+Each metadata table should be available in metadata/. This is present in the Data_Metadata column. 
+We want to colour each metadata column according to how many times it shows up in the Paper_Metadata_Columns column.
+
+```{r}
+# This function figures out how many times each variable is mentioned, and it assigns it a colour. 
+# White = no mentions, yellow = few mentions, purple = many mentions. Anything over the high_use_threshold will be assigned the same colour (purple). 
+# By using the same scale for every dataset, students can tell a) which variables are underused but also b) which datasets are underused.
+
+format_metadata_table = function(dataset, high_use_threshold = 5) {
+  # dataset='Colombia' # For testing
+  
+  database_filt = read.csv('Project_Database.csv') %>% filter(Data_Name==dataset)
+  
+  metadata_file = database_filt$Data_Metadata[1]  # Assuming there's only one matching dataset
+  
+  # Read the metadata file
+  metadata = read.csv(metadata_file)
+  
+  # Count occurrences of each column in the paper metadata columns
+  temp = strsplit(database_filt$Paper_Metadata_Columns, ";")
+  temp = unlist(temp)
+  column_counts = table(temp)
+  
+  # Create a new column for colour coding based on counts. 
+  
+  colour_code = sapply(names(metadata), function(col) {
+    # col='age_range' # For testing
+    
+    count = column_counts[col] # How many times has this variable been used?
+    
+    if (is.na(count)) {
+      return("#FFFFFF")  # White for columns not in the paper metadata
+      
+    } else {
+      # Map count to a colour in your favourite gradient
+      colour_value = count / high_use_threshold  # Normalize to the high_use_threshold
+      return(colorRampPalette(c("yellow", "purple"))(100)[round(colour_value * 100)])
+    }
+  })
+  
+  # Create a table of the metadata with the colour coding
+  variable_colours = data.frame(Variable=names(metadata), colour_code=colour_code) %>% `rownames<-`(NULL)
+  
+  return(variable_colours)
+}
+
+variable_colours = format_metadata_table('Colombia')
+```
+
+```{r}
+# Then print the table in HTML, where the columns are coloured accordingly.
+# Probably easiest to rerun this every time someone clicks on a dataset, rather than precompiling the tables for all datasets.
+# That way instructors don't have to remember to update the tables every time they add a new dataset.
+
+# install.packages('gt')
+library(gt)
+
+# This would all be done for the dataset that the user clicked on, but for now let's just do it for Colombia.
+
+# This would use the Data_Metadata column.
+table_to_format = read.csv('metadata/colombia_metadata.csv')
+
+# Formats output of format_metadata_table() into a named vector.
+col_map = setNames(variable_colours$colour_code, 
+                    variable_colours$Variable)
+
+# Some R-related stuff - it'll be different when written in HTML/Javascript
+tab = gt(table_to_format) %>%
+  tab_options(table.width = pct(100))
+
+# For every variable, colour according to the col_map.
+for (v in names(col_map)) {
+  if (v %in% names(table_to_format)) {
+    tab = tab %>%
+      tab_style(
+        style = cell_fill(color = col_map[[v]]),
+        locations = cells_column_labels(columns = v)
+      )
+  }
+}
+
+# See the result. 
+tab
+
+# Smoker is clearly used the most since it's purple, and we can double check this.
+database %>% 
+  filter(Data_Name=='Colombia') %>% 
+  pull(Paper_Metadata_Columns) %>% 
+  str_detect('smoker') %>% 
+  table(uses_smoker_column=.)
+```
+
