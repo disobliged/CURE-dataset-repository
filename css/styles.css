@@ -1,0 +1,170 @@
+ul {
+  list-style-type: none;
+  margin: 10px;
+  padding-left: 10px;
+  overflow: hidden;
+}
+
+.ul2 {
+  list-style-type: circle !important;
+  margin: 10px;
+  padding-left: 10px;
+}
+
+li {
+  float: left;
+}
+
+.li1 {
+  float: none;
+  padding-bottom: 5px;
+}
+
+.li2 {
+  float: none;
+  padding-bottom: 5px;
+}
+
+.li2::marker{
+  content: '• ';
+  font-size: 2rem;
+}
+
+li a {
+  display: block;
+  padding: 8px;
+  
+}
+
+header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.5% 5%;
+    background-color: #0b491b;
+    border-radius: 0px;
+    box-shadow: 2px 2px #000000;
+}
+
+.hide {
+  display: none !important
+}
+.show {
+  display: inline !important
+}
+
+.logo{
+  font-weight: bold;
+  font-size: 15pt;
+}
+
+.logo2{
+  font-size: 14pt;
+}
+
+header a{
+  text-decoration: none !important;
+  color: #fff;
+  font-size: 17px;
+}
+
+ol {
+  padding-left: 15px;
+  font-size: larger;
+}
+
+header a:hover{
+  color: #1a9e3b;
+}
+
+.content{
+  padding: 2% 2% 2% 5%;
+}
+
+body {
+  background: #242627;
+  color: rgb(250, 242, 232);
+  height: 100%;
+  }
+
+div {
+  word-wrap: normal;
+  max-width: 630px;
+}
+
+b {
+  color: #1fce4b;
+}
+
+mark {
+  background-color: #27f85c;
+  font-weight: bold;
+  padding: 0px;
+}
+.btn{
+  padding: 1rem !important;
+  border-radius: 20px;
+}
+
+.btn-refresh{
+  background-color: #1a9e3b !important;
+  font-size: 15pt;
+}
+button.btn.def {
+  background-color: #0b491b;
+  border-color: #0b491b;
+  box-shadow: 2px 2px #000000;
+  font-size: 10pt;
+  color:rgb(250, 242, 232);
+  padding-left: 3px;
+  padding-right: 3px;
+  margin-left: 3px;
+  margin-right: 3px;
+  text-align: center;
+  transition: all ease-in-out 0.5s;
+  cursor: pointer;
+  display: inline-block;
+}
+
+button.btn.def:hover {
+  border-color: #06270e;
+  background-color: #0b491b;
+  transition: all ease-in-out 0s;
+  color:rgb(250, 242, 232);
+}
+
+.ans{
+  margin-left: 65px !important;
+  font-size: large;
+  color: #27f85c;
+}
+.ans2{
+  margin-left: 130px !important;
+  font-size: large;
+  color: #27f85c;
+}
+
+img {
+  padding-top: 10px;
+  padding: 10px;
+  max-width: 700px;
+  max-height: 700px;
+    width: 100%;
+    height: auto;
+}
+
+@media only screen and (max-width: 1350px) {
+  #gen_codons {
+      display: none;
+  }
+}
+.homepage_link{
+  color: #27f85c;
+  font-size: large;
+}
+
+.sub_question{
+  margin-left: 1%;
+  display:inline;
+  font-size: medium;
+}
