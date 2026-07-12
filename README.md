@@ -11,10 +11,10 @@ This repository contains information on the datasets used in MICB_V 305 at the U
 └── Project_Database.csv
 ```
 ### Important Directories
-```css``` contains the css code used to design the website,
-```cure_search``` contains the files used for the CURE Search website,
-```metadata``` contains the raw ```csv``` files for the datasets used in MICB_V 305,
-```Project_Database.csv``` contains the datasets used in MICB_V 305 in a human-readable file.
+- ```css``` contains the css code used to design the website,
+- ```cure_search``` contains the files used for the CURE Search website,
+- ```metadata``` contains the raw ```csv``` files for the datasets used in MICB_V 305,
+- ```Project_Database.csv``` contains the datasets used in MICB_V 305 in a human-readable file.
 
 ## Replicating at your institution
 TBD
