@@ -19,6 +19,12 @@ This repository contains information on the datasets used in MICB_V 305 at the U
 ## Replicating at your institution
 TBD
 
+## Dataset Requirements
+- The file can have any title, but it must match the filepath provided in the project database file.
+- The metadata should be a tidy table in csv or tsv format, where each sample is a row and each variable is a column.
+- The metadata table should not include any additional lines (ex. a line of text in a row above the table)
+- The metadata should match the version provided to students. This will help to ensure that students accurately report which variables they analyzed.
+
 ## Attributions
 
 Base files from ```armetcal.github.io``` by [Avril Metcalfe-Roach](https://github.com/armetcal).

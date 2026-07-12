@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+
+<html lang="en"> 
+<head>
+    <meta charset="utf-8" />
+    <title>CURE Course Dataset Search</title>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <script src="index.js"></script>
+    <link rel="stylesheet" href="../../css/styles.css">
+</head>
+
+<body>
+    <header>
+        <a class="logo" href="index.html">CURE Dataset Search</a> <!-- Link to home page -->
+        <nav class="nav__links">
+            <ul>
+                <li><a href="../../Project_Database.csv">Download All Data</a></li>
+                <li><a href="../../metadata/index.html">View Datasets</a></li> <!-- Placeholder link to database page -->
+            </ul> 
+        </nav>
+
+    </header>
+
+    <div class="content" style='float:left;'>
+
+        <label for="results_list">
+            <h3>Dataset Search Results</h3>
+        </label>
+
+        <br>
+        <button class="btn def btn-refresh" id="do" onclick="do_onclick()">
+            <a href="../index.html" style="color: white;">Return to Previous page</a>
+        </button>
+
+        <p style="margin-top: 20px;">
+        <h2 style="display:inline;">Results:</h2>
+        </p>
+
+        <div id="search_results"></div>
+</body>
+
+<footer class="site-footer">
+    <div style='clear: both; max-width: 10000px;'>
+        <hr>
+        <p>
+            <center>
+                Developed by Izaak Yip and Avril Metcalfe-Roach
+            </center>
+        </p>
+        <p>
+            <center>
+                Contact email: Placeholder
+            </center>
+        </p>
+        <p>
+            <center>
+                Updated: 4 July 2026
+            </center>
+        </p>
+        <p>
+            <center>
+                Version: Very Early Alpha
+            </center>
+        </p>
+    </div>
+</footer>
+
+</html>
