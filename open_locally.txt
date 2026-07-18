@@ -1,0 +1,7 @@
+# This lets me test stuff out locally - my browsers can't access all the files without setting up a local host
+
+cd "/Users/armetcal/Library/CloudStorage/OneDrive-UBC/Collaborations/Pedagogy/Data Science Methods/CURE-dataset-repository"
+
+python3 -m http.server 8000
+
+http://localhost:8000/cure_search/index.html 
