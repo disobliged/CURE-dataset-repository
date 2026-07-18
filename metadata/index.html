@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+
+<html lang="en"> 
+<head>
+    <meta charset="utf-8" />
+    <title>CURE Course Dataset Search</title>
+    <!-- defer ensures scripts are executed after the HTML is parsed. Necessary for scripts that manipulate the DOM (document structure). -->
+    <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+    <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
+    <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
+    <script defer src="../cure_search/index.js"></script>
+    <script defer src="index.js"></script>
+    <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
+    <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
+    <link rel="stylesheet" href="https://cdn.datatables.net/1.13.6/css/jquery.dataTables.min.css">
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+
+<body>
+    <header>
+        <a class="logo" href="../cure_search/index.html">CURE Dataset Search</a> <!-- Link to home page -->
+        <nav class="nav__links">
+            <ul>
+                <li><a href="../Project_Database.csv">Download All Data</a></li>
+                <li><a href="index.html">View Datasets</a></li> <!-- Placeholder link to database page -->
+            </ul> 
+        </nav>
+
+    </header>
+
+    <main class="container" style="margin-top:20px;">
+        <div id="search_results" style="margin-bottom:12px;"></div>
+
+        <div class="form-inline" style="margin-bottom:12px;">
+        <select id="dataset_select" class="form-control" style="width:60%; margin-right:8px;">
+            <option value="">-- Select dataset --</option>
+        </select>
+        <button id="show_metadata_btn" class="btn btn-primary">Show metadata</button>
+        </div>
+
+        <div id="metadata_container" style="margin-top:20px;"></div>
+    </main>
+
+</body>
+<footer class="site-footer">
+    <div style='clear: both; max-width: 10000px;'>
+        <hr>
+        <p>
+            <center>
+                Developed by Izaak Yip and Avril Metcalfe-Roach
+            </center>
+        </p>
+        <p>
+            <center>
+                Contact email: Placeholder
+            </center>
+        </p>
+        <p>
+            <center>
+                Updated: 4 July 2026
+            </center>
+        </p>
+        <p>
+            <center>
+                Version: Very Early Alpha
+            </center>
+        </p>
+    </div>
+</footer>
+</html>
