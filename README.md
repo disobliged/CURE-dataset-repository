@@ -27,4 +27,4 @@ TBD
 
 ## Attributions
 
-Base files from ```armetcal.github.io``` by [Avril Metcalfe-Roach](https://github.com/armetcal).
+Base files from ```armetcal.github.io``` by [Dr. Avril Metcalfe-Roach](https://github.com/armetcal).
