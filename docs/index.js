@@ -7,7 +7,7 @@
   // VERY IMPORTANT THAT THIS FILE PATH IS ACCURATE
   // database_location: the path to the project repo CSV file (relative to the top of the Github repo)
   var config = {
-    database_location: '/Project_Database.csv',
+    database_location: '../Project_Database.csv',
   };
 
   window.databaseRecords = [];
