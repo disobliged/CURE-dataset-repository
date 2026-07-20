@@ -8,7 +8,7 @@
     <script defer src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
     <script defer src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script defer src="https://cdn.datatables.net/1.13.6/js/jquery.dataTables.min.js"></script>
-    <script defer src="../cure_search/index.js"></script>
+    <script defer src="../index.js"></script>
     <script defer src="index.js"></script>
     <link href="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/css/bootstrap.min.css" rel="stylesheet" />
     <link href="https://maxcdn.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css" rel="stylesheet" />
@@ -18,7 +18,7 @@
 
 <body>
     <header>
-        <a class="logo" href="../cure_search/index.html">CURE Dataset Search</a> <!-- Link to home page -->
+        <a class="logo" href="../index.html">CURE Dataset Search</a> <!-- Link to home page -->
         <nav class="nav__links">
             <ul>
                 <li><a href="../Project_Database.csv">Download All Data</a></li>
@@ -38,6 +38,13 @@
         <button id="show_metadata_btn" class="btn btn-primary">Show metadata</button>
         </div>
 
+        <!-- DATASET OVERVIEW - TO BE REFORMATTED LATER -->
+        <div id="dataset_overview" style="margin-bottom:12px;">
+            <h3>Placeholder for Dataset Overview</h3>
+        </div>
+
+        <!-- Generate the metadata table -->
+         <!-- CURRENTLY GENERATES TABLE, USE SUMMARY, AND CONTINGENCY TABLE - NEEDS EDITING -->
         <div id="metadata_container" style="margin-top:20px;"></div>
     </main>
 
