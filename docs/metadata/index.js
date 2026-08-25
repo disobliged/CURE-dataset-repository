@@ -136,13 +136,13 @@ function renderCombinationTable(rows, variables) {
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 // Create a histogram for a numeric variable
 function renderHistogram(data,col,options){
-  options = options || {};
+  options = options || {}; // default to empty object if not provided
   var bins = options.bins || 10;
-  var container = options.container || '#histogram_container';
+  var container = options.container || '#output_histogram';
   var title = options.title || ('Histogram of: ' + col);
 
   if (!Array.isArray(data) || data.length === 0) {
-    return $(container).append($('<div>').text('No data'));
+    return $(container).empty().append($('<div>').text('No data'));
   }
 
   // get all the numeric values for the given column
@@ -151,7 +151,7 @@ function renderHistogram(data,col,options){
   .map(function (v) { return Number(v); });
 
   if(!vals.length) {
-    $(container).append($('<div>').text('No numeric data for ' + col));
+    $(container).empty().append($('<div>').text('No numeric data for ' + col));
     return;   
   }
 
@@ -159,7 +159,7 @@ function renderHistogram(data,col,options){
   var min = Math.min.apply(null, vals);
   var max = Math.max.apply(null, vals);
   if (min === max) {
-    $(container).append($('<div>').text('All values are the same for ' + col + ': ' + min));
+    $(container).empty().append($('<div>').text('All values are the same for ' + col + ': ' + min));
     return;
   }
 
@@ -208,7 +208,7 @@ function renderHistogram(data,col,options){
     .attr('height', canvasHeight)
     .css({ width: '100%', display: 'block' });
   $wrap.append($canvas);
-  $(container).append($wrap);
+  $(container).empty().append($wrap);
 
   function drawChart() {
     var ctx = document.getElementById(canvasId).getContext('2d');
@@ -263,14 +263,14 @@ function renderHistogram(data,col,options){
 function showMetadataTable(datasetName, high_use_threshold = 5) {
   var row = (window.databaseRecords || []).find(function (r) { return (r.Data_Name || '') === datasetName; });
   if (!row) {
-    $('#metadata_container').html('<p>No metadata found for ' + datasetName + '</p>');
+    $('#output_table').html('<p>No metadata found for ' + datasetName + '</p>');
     return;
   }
 
   // and this is looking for the file at the Data_metadata file path
   var metadataPath = row.Data_Metadata || '';
   if (!metadataPath) {
-    $('#metadata_container').html('<p>Metadata file missing for ' + datasetName + '</p>');
+    $('#output_table').html('<p>Metadata file missing for ' + datasetName + '</p>');
     return;
   }
   
@@ -296,11 +296,13 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
         complete: function (res) {
           var data = res.data || [];
           if (!data.length) {
-            $('#metadata_container').html('<p>Metadata file empty or could not be parsed.</p>');
+            $('#output_table').html('<p>Metadata file empty or could not be parsed.</p>');
             return;
           }
 
-          // Build table
+          // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          // OUTPUT_TABLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          
           var columns = Object.keys(data[0]);
           var $table = $('<table id="metadata_table" class="display" style="width:100%"></table>');
           var $thead = $('<thead></thead>');
@@ -338,12 +340,13 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
           });
           $table.append($tbody);
 
-          // Add the legend and table to the container
+          // Add the legend and table to the HTML container
           var $legend = renderColourLegend(high_use_threshold);
           var $title = $('<div>').text('Number of times each variable has been used as a primary outcome:');
-          $('#metadata_container').empty().append($title).append($legend).append('<br>').append($table);
+          $('#output_table').empty().append($title).append($legend).append('<br>').append($table);
 
-          // initialize DataTables if available
+          // Use DataTables to make the table pretty
+          // (Note that it's using the table's ID to modify the table (metadata_table), NOT the div container name (output_table) to append a new HTML element)
           if ($.fn.dataTable) {
             if ($.fn.dataTable.isDataTable('#metadata_table')) {
               $('#metadata_table').DataTable().destroy();
@@ -351,12 +354,14 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
             $('#metadata_table').DataTable({ pageLength: 10, responsive: true });
           }
 
-          // ADD VARIABLE COUNT SUMMARY BELOW MAIN METADATA TABLE
+          // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          // OUTPUT_SUMMARY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
           // sort variable counts from biggest to smallest
           var sortedCounts = Object.entries(counts).sort(function(a, b) { return b[1] - a[1]; });
-          console.log('Sorted variable counts for dataset', datasetName, sortedCounts);
+          console.log('Sorted variable counts for dataset:', datasetName, sortedCounts);
           // display sortedCounts as a table
-          var $counttable = $('<table id="metadata_table" class="display" style="width:100%"></table>');
+          var $counttable = $('<table id="output_summary_table" class="display" style="width:100%"></table>');
           var $countthead = $('<thead></thead>');
           var $counttr = $('<tr></tr>');
           $counttr.append($('<th></th>').text('Variable'));
@@ -372,65 +377,98 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
           });
           $counttable.append($counttbody);
 
+          // Add it to the HTML container
           var countTitle = $('<div>').html("<h4>Variable usage summary:</h4>");
-          $('#metadata_container').append("<br>").append(countTitle).append($counttable);
+          // Remember to use .empty() first in order to remove any previously-generated tables!
+          $('#output_summary').empty().append("<br>").append(countTitle).append($counttable);
 
-          // initialize DataTables for the counts table if needed
-         if ($.fn.dataTable) {
-           if ($.fn.dataTable.isDataTable('#variable_counts_table')) {
-             $('#variable_counts_table').DataTable().destroy();
-           }
-           $('#variable_counts_table').DataTable({ pageLength: 10, responsive: true, searching: false });
-         }
+          // Make this table pretty, too
+          if ($.fn.dataTable) {
+            if ($.fn.dataTable.isDataTable('#output_summary_table')) {
+              $('#output_summary_table').DataTable().destroy();
+            }
+            $('#output_summary_table').DataTable({ pageLength: 10, responsive: true, searching: false, order: [[1, 'desc']] });
+          }
 
-         // Add in the contingency table
-         // Use two example variables for now - EDIT SO THAT IT USES HTML SELECTORS
-         var chooser = document.getElementById('chooser')
-         //var where = document.getElementById('chooser')
-         //console.log(where)
-          //columns.forEach(function(colname){ $chooser.append($('<option>').val(colname).text(colname)); });
-        for (const col of columns){
-          var opt = document.createElement('option');
-            opt.value = col;
-            opt.innerHTML = col;
-            chooser.appendChild(opt);
-        }
-        $("#chooser").selectpicker("refresh");
-         var chooser_output = $('#chooser').val();
-         var contTable = combinationCounts(data, chooser_output);
-         var contTitle = $('<div>').html("<h4>Contingency Table:</h4>");
-         chooser.addEventListener('change', function(event){
-          const selectedValue = event.target.value;
-          $('#metadata_container').find('.contTable').remove();
-          var new_tab = combinationCounts(data, selectedValue);
-         })
-         $("#chooser").selectpicker("refresh");
-         $('#metadata_container').append("<br>").append(contTitle).append(renderCombinationTable(new_tab, chooser_output));
-        
-         // render histogram for numeric column "age_years" - AGAIN, JUST USING AGE AS A PLACEHOLDER
-         renderHistogram(data, 'age_years', { bins: 12, container: '#metadata_container', title: 'Age (years)' });
+          // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          // OUTPUT_CONTINGENCY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+          // PART 1: Done before selecting any variables
+          // Create an empty HTML selector
+          var chooser = document.createElement('select');
+               chooser.className = "selectpicker";
+               chooser.id = "chooser_contingency";
+               chooser.multiple = true;
+               chooser.setAttribute("data-live-search", "true");
+               chooser.setAttribute("title", "Contingency table variables...");
+
+          // Load the empty HTML selector - OLD
+          // var chooser = document.getElementById('chooser_contingency')
+
+          // Add all the variable names to the selector.
+          for (const col of columns){
+            var opt = document.createElement('option');
+              opt.value = col;
+              opt.innerHTML = col;
+              chooser.appendChild(opt);
+          }
+          console.log('Chooser options added:', chooser.options);
+
+          $('#output_contingency').empty().append("<br>").append(chooser)
+
+          // Then refresh the selector - otherwise it doesn't show up
+          $('#chooser_contingency').selectpicker("refresh");
+
+          // PART 2: Once variables are selected, generate the contingency table
+          // TO DO: troubleshoot, probably by moving this to its own function and adding a listener that triggers whenever the variable selection changes. See the bottom of the page for an example, since loading the databases is pretty similar
+          // var chooser_output = $('#chooser_contingency').val();
+          // var contTable = combinationCounts(data, chooser_output);
+          // var contTitle = $('<div>').html("<h4>Contingency Table:</h4>");
+
+          // chooser.addEventListener('change', function(event){
+          //   const selectedValue = event.target.value;
+          //   $('#output_contingency').find('.contTable').remove();
+          //   var new_tab = combinationCounts(data, selectedValue);
+          // })
+          // $("#chooser_contingency").selectpicker("refresh");
+          // $('#output_contingency').empty().append("<br>").append($chooser).append(contTitle).append(renderCombinationTable(new_tab, chooser_output));
+
+
+          // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          // OUTPUT_HISTOGRAM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+          // render histogram for numeric column "age_years" - AGAIN, JUST USING AGE AS A PLACEHOLDER
+          renderHistogram(data, 'age_years', { bins: 12, container: '#output_histogram', title: 'Age (years)' });
+
         },
         error: function (err) {
-          $('#metadata_container').html('<p>Error parsing metadata: ' + String(err) + '</p>');
+          $('#output_table').html('<p>Error parsing metadata: ' + String(err) + '</p>');
         }
       });
     })
     .catch(function (err) {
       console.error('Metadata fetch error for', metadataPath, err);
-      $('#metadata_container').html('<p>Error loading metadata at <code>' + metadataPath + '</code>: ' + String(err) + '</p>');
+      $('#output_table').html('<p>Error loading metadata at <code>' + metadataPath + '</code>: ' + String(err) + '</p>');
     });
 
 }
 
 // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-// Dataset selectors
+
+// This will run automatically when the page loads
 (function () {
+
+  // Dataset selector funtions ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+  // this adds the available dataset names to the drop down list
   function populate() {
+    // All the records listed in the big CSV file
     var recs = window.databaseRecords || [];
-    if (!recs.length) return false;
+    if (!recs.length) return false; // None found
     var seen = new Set();
     var $sel = $('#dataset_select');
-    $sel.find('option:not([value=""])').remove();
+    $sel.find('option:not([value=""])').remove(); // remove everything except the placeholder, not that anything should be there anyway
+    // Add each UNIQUE dataset name
     recs.forEach(function (r) {
       var name = r.Data_Name || '';
       if (name && !seen.has(name)) {
@@ -442,7 +480,8 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
   }
 
   $(function () {
-    // Try immediately; if not ready, try again in a few secs (max ~5s)
+    // Try immediately; if not ready, try again in 100ms (max 5s)
+    // Takes some milliseconds to load the data
     if (!populate()) {
       var tries = 0;
       var maxTries = 50;
@@ -450,15 +489,12 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
         if (populate() || ++tries >= maxTries) clearInterval(t);
       }, 100);
     }
-
+    // Once people select a dataset, they need to click the load button
+    // This function is activated once the page loads - it'll work every time they press the button, not just when the page loads
     $('#show_metadata_btn').on('click', function () {
-      var ds = $('#dataset_select').val();
-      if (!ds) { alert('Please select a dataset'); return; }
-      if (typeof showMetadataTable === 'function') {
-        showMetadataTable(ds);
-      } else {
-        alert('Metadata helper not loaded yet.');
-      }
+      var ds = $('#dataset_select').val(); // ds is the dataset name
+      if (!ds) { alert('Please select a dataset'); return; } // If they search without selecting a dataset
+      showMetadataTable(ds); // This function is defined above
     });
   });
 })();

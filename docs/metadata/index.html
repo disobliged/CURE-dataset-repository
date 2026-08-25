@@ -46,13 +46,23 @@
             <h3>Placeholder for Dataset Overview</h3>
         </div>
 
+        <!-- METADATA TABLE-->
+        <div id="output_table" style="margin-bottom:12px;"></div>
+
+        <!-- SUMMARY OF USED VARIABLES TABLE-->
+        <div id="output_summary" style="margin-bottom:12px;"></div>
+
+        <!-- CONTINGENCY TABLE-->
+         <!-- display=none will be updated once the person selects a dataset.-->
+        <div id="output_contingency" style="margin-bottom:12px"></div>
+
+        <!-- HISTOGRAM-->
+         <!-- display=none will be updated once the person selects a dataset.-->
+        <div id="output_histogram" style="margin-bottom:12px"></div>
+
         <!-- Generate the metadata table -->
          <!-- CURRENTLY GENERATES TABLE, USE SUMMARY, AND CONTINGENCY TABLE - NEEDS EDITING -->
-          <select class="selectpicker" id="chooser" multiple data-live-search="true" title="Choose variables...">
-            <option>age_years</option>
-            <option>country</option>
-            <option>city</option>
-        </select>
+          
         <div id="metadata_container" style="margin-top:20px;"></div>
         
     </main>
