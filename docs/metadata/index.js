@@ -385,10 +385,28 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
 
          // Add in the contingency table
          // Use two example variables for now - EDIT SO THAT IT USES HTML SELECTORS
-         var contTable = combinationCounts(data, ['age_years','city']);
+         var chooser = document.getElementById('chooser')
+         //var where = document.getElementById('chooser')
+         //console.log(where)
+          //columns.forEach(function(colname){ $chooser.append($('<option>').val(colname).text(colname)); });
+        for (const col of columns){
+          var opt = document.createElement('option');
+            opt.value = col;
+            opt.innerHTML = col;
+            chooser.appendChild(opt);
+        }
+        $("#chooser").selectpicker("refresh");
+         var chooser_output = $('#chooser').val();
+         var contTable = combinationCounts(data, chooser_output);
          var contTitle = $('<div>').html("<h4>Contingency Table:</h4>");
-         $('#metadata_container').append("<br>").append(contTitle).append(renderCombinationTable(contTable, ['age_years','city']));
-
+         chooser.addEventListener('change', function(event){
+          const selectedValue = event.target.value;
+          $('#metadata_container').find('.contTable').remove();
+          var new_tab = combinationCounts(data, selectedValue);
+         })
+         $("#chooser").selectpicker("refresh");
+         $('#metadata_container').append("<br>").append(contTitle).append(renderCombinationTable(new_tab, chooser_output));
+        
          // render histogram for numeric column "age_years" - AGAIN, JUST USING AGE AS A PLACEHOLDER
          renderHistogram(data, 'age_years', { bins: 12, container: '#metadata_container', title: 'Age (years)' });
         },
