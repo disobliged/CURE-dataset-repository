@@ -436,6 +436,29 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
 
           // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           // OUTPUT_HISTOGRAM ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+          // To check aug 28 // Why is the selector not working?
+          // PART 1: Done before selecting any variables
+          // Create an empty HTML selector
+          var hist_choose = document.createElement('select');
+               hist_choose.className = "selectpicker";
+               hist_choose.id = "chooser_hist";
+               hist_choose.multiple = true;
+               hist_choose.setAttribute("data-live-search", "true");
+               hist_choose.setAttribute("title", "Histogram variables...");
+
+          // Add all the variable names to the selector.
+          for (const col of columns){
+            var opt = document.createElement('option');
+              opt.value = col;
+              opt.innerHTML = col;
+              hist_choose.appendChild(opt);
+          }
+          console.log('Histogram Chooser options added:', hist_choose.options);
+
+          $('#output_histogram').empty().append("<br>").append(hist_choose)
+
+          // Then refresh the selector - otherwise it doesn't show up
+          $('#output_histogram').selectpicker("refresh");
 
           // render histogram for numeric column "age_years" - AGAIN, JUST USING AGE AS A PLACEHOLDER
           renderHistogram(data, 'age_years', { bins: 12, container: '#output_histogram', title: 'Age (years)' });
