@@ -142,7 +142,7 @@ function renderHistogram(data,col,options){
   var title = options.title || ('Histogram of: ' + col);
 
   if (!Array.isArray(data) || data.length === 0) {
-    return $(container).empty().append($('<div>').text('No data'));
+    return $(container).append($('<div>').text('No data')); // empty removed
   }
 
   // get all the numeric values for the given column
@@ -151,7 +151,7 @@ function renderHistogram(data,col,options){
   .map(function (v) { return Number(v); });
 
   if(!vals.length) {
-    $(container).empty().append($('<div>').text('No numeric data for ' + col));
+    $(container).append($('<div>').text('No numeric data for ' + col)); // empty removed
     return;   
   }
 
@@ -159,7 +159,7 @@ function renderHistogram(data,col,options){
   var min = Math.min.apply(null, vals);
   var max = Math.max.apply(null, vals);
   if (min === max) {
-    $(container).empty().append($('<div>').text('All values are the same for ' + col + ': ' + min));
+    $(container).append($('<div>').text('All values are the same for ' + col + ': ' + min)); // empty removed
     return;
   }
 
@@ -208,7 +208,7 @@ function renderHistogram(data,col,options){
     .attr('height', canvasHeight)
     .css({ width: '100%', display: 'block' });
   $wrap.append($canvas);
-  $(container).empty().append($wrap);
+  $(container).append($wrap); // empty
 
   function drawChart() {
     var ctx = document.getElementById(canvasId).getContext('2d');
@@ -458,7 +458,7 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
           $('#output_histogram').empty().append("<br>").append(hist_choose)
 
           // Then refresh the selector - otherwise it doesn't show up
-          $('#output_histogram').selectpicker("refresh");
+          $('#chooser_hist').selectpicker("refresh");
 
           // render histogram for numeric column "age_years" - AGAIN, JUST USING AGE AS A PLACEHOLDER
           renderHistogram(data, 'age_years', { bins: 12, container: '#output_histogram', title: 'Age (years)' });
