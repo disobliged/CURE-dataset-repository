@@ -284,6 +284,7 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
 
   // and this is looking for the file at the Data_metadata file path
   var metadataPath = row.Data_Metadata || '';
+  console.log(metadataPath)
   if (!metadataPath) {
     $('#output_table').html('<p>Metadata file missing for ' + datasetName + '</p>');
     return;
