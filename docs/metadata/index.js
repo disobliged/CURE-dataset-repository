@@ -1,4 +1,3 @@
-<<<<<<< HEAD
 // Overview of the functions represented in this file:
 
 // COLOUR SCALING AND LEGEND:
@@ -290,34 +289,6 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
     return;
   }
   
-=======
-// Show interactive metadata table for a dataset (datasetName should match Data_Name)
-function showMetadataTable(datasetName, high_use_threshold = 5) {
-  var row = (window.databaseRecords || []).find(function (r) { return (r.Data_Name || '') === datasetName; });
-  if (!row) {
-    $('#metadata_container').html('<p>No metadata found for ' + datasetName + '</p>');
-    return;
-  }
-
-  // and this is looking for the file at the Data_metadata file path
-  var metadataPath = row.Data_Metadata || '';
-  if (!metadataPath) {
-    $('#metadata_container').html('<p>Metadata file missing for ' + datasetName + '</p>');
-    return;
-  }
-
-  // Adjust the file path, done with AI and checked by me:
-  // - If it already starts with '/' or is an absolute URL, keep it.
-  // - Otherwise prefix '/' so "metadata/..." -> "/metadata/..."
-  // This is necessary because the file path would just not work properly, regardless of format - I don't know what magic it's performing here that I couldn't replicate.
-  // Might be worth fixing up later, but works for now.
-  var metadataUrl = (/^[a-z]+:\/\//i.test(metadataPath) || metadataPath.startsWith('/'))
-    ? metadataPath
-    : ('/' + metadataPath.replace(/^\/+/, ''));
-  
-  console.log('showMetadataTable: dataset=', datasetName, ' metadataPath=', metadataPath, ' metadataUrl=', metadataUrl);
-
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
   // compute counts of variables used by papers for this dataset
   var counts = {};
   (window.databaseRecords || []).forEach(function (r) {
@@ -329,44 +300,27 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
 
   // fetch & .then first checks to see if an object exists, and then only proceeds if it does.
   // Quick existence check so you get a clear error rather than a silent Papa.parse failure
-<<<<<<< HEAD
   fetch(metadataPath, { method: 'HEAD' })
     .then(function (res) {
       if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
       // parse and render
       Papa.parse(metadataPath, {
-=======
-  fetch(metadataUrl, { method: 'HEAD' })
-    .then(function (res) {
-      if (!res.ok) throw new Error('HTTP ' + res.status + ' ' + res.statusText);
-      // parse and render
-      Papa.parse(metadataUrl, {
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
         download: true,
         header: true,
         skipEmptyLines: true,
         complete: function (res) {
           var data = res.data || [];
           if (!data.length) {
-<<<<<<< HEAD
             $('#output_table').html('<p>Metadata file empty or could not be parsed.</p>');
             return;
           }
 
-          
+
           // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           // OUTPUT_TABLE ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           var columns = Object.keys(data[0]);
           // expose variable output for handlers outside this scope
           window._metadata_current = { data: data, columns: Object.keys(data[0] || {}), counts: counts };
-=======
-            $('#metadata_container').html('<p>Metadata file empty or could not be parsed.</p>');
-            return;
-          }
-
-          // Build table
-          var columns = Object.keys(data[0]);
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
           var $table = $('<table id="metadata_table" class="display" style="width:100%"></table>');
           var $thead = $('<thead></thead>');
           var $tr = $('<tr></tr>');
@@ -403,7 +357,6 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
           });
           $table.append($tbody);
 
-<<<<<<< HEAD
           // Add the legend and table to the HTML container
           var $title = $('<div>').html("<h4>Metadata Table:</h4>");
           var $legend = renderColourLegend(high_use_threshold);
@@ -412,18 +365,12 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
 
           // Use DataTables to make the table pretty
           // (Note that it's using the table's ID to modify the table (metadata_table), NOT the div container name (output_table) to append a new HTML element)
-=======
-          $('#metadata_container').empty().append($table);
-
-          // initialize DataTables if available
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
           if ($.fn.dataTable) {
             if ($.fn.dataTable.isDataTable('#metadata_table')) {
               $('#metadata_table').DataTable().destroy();
             }
             $('#metadata_table').DataTable({ pageLength: 10, responsive: true });
           }
-<<<<<<< HEAD
 
           // ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
           // OUTPUT_SUMMARY ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
@@ -533,16 +480,10 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
         },
         error: function (err) {
           $('#output_table').html('<p>Error parsing metadata: ' + String(err) + '</p>');
-=======
-        },
-        error: function (err) {
-          $('#metadata_container').html('<p>Error parsing metadata: ' + String(err) + '</p>');
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
         }
       });
     })
     .catch(function (err) {
-<<<<<<< HEAD
       console.error('Metadata fetch error for', metadataPath, err);
       $('#output_table').html('<p>Error loading metadata at <code>' + metadataPath + '</code>: ' + String(err) + '</p>');
     });
@@ -565,21 +506,6 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
     var $sel = $('#dataset_select');
     $sel.find('option:not([value=""])').remove(); // remove everything except the placeholder, not that anything should be there anyway
     // Add each UNIQUE dataset name
-=======
-      console.error('Metadata fetch error for', metadataUrl, err);
-      $('#metadata_container').html('<p>Error loading metadata at <code>' + metadataUrl + '</code>: ' + String(err) + '</p>');
-    });
-}
-
-// Dataset selectors
-(function () {
-  function populate() {
-    var recs = window.databaseRecords || [];
-    if (!recs.length) return false;
-    var seen = new Set();
-    var $sel = $('#dataset_select');
-    $sel.find('option:not([value=""])').remove();
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
     recs.forEach(function (r) {
       var name = r.Data_Name || '';
       if (name && !seen.has(name)) {
@@ -591,12 +517,8 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
   }
 
   $(function () {
-<<<<<<< HEAD
     // Try immediately; if not ready, try again in 100ms (max 5s)
     // Takes some milliseconds to load the data
-=======
-    // Try immediately; if not ready, try again in a few secs (max ~5s)
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
     if (!populate()) {
       var tries = 0;
       var maxTries = 50;
@@ -604,7 +526,6 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
         if (populate() || ++tries >= maxTries) clearInterval(t);
       }, 100);
     }
-<<<<<<< HEAD
     // Once people select a dataset, they need to click the load button
     // This function is activated once the page loads - it'll work every time they press the button, not just when the page loads
     $('#show_metadata_btn').on('click', function () {
@@ -659,17 +580,4 @@ function showMetadataTable(datasetName, high_use_threshold = 5) {
     });
   });
   
-=======
-
-    $('#show_metadata_btn').on('click', function () {
-      var ds = $('#dataset_select').val();
-      if (!ds) { alert('Please select a dataset'); return; }
-      if (typeof showMetadataTable === 'function') {
-        showMetadataTable(ds);
-      } else {
-        alert('Metadata helper not loaded yet.');
-      }
-    });
-  });
->>>>>>> e65a07ebdbf83ab28d52d2dcedb9449a7156a1ee
 })();
