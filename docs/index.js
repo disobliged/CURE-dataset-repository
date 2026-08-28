@@ -6,7 +6,7 @@
 
   // VERY IMPORTANT THAT THIS FILE PATH IS ACCURATE
   // database_location: the path to the project repo CSV file (relative to the top of the Github repo)
-  // choose a relative path to Project_Database.csv depending on page location
+  // choose a relative path to Project_Database.csv depending on page location, since the repo is published at 'docs' and not root
   var config = {
     database_location: (function () {
       // if the page URL contains "/metadata/" we are one level deeper
