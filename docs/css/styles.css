@@ -168,3 +168,32 @@ img {
   display:inline;
   font-size: medium;
 }
+
+/* Dataset search formatting */
+
+/* Scoped overrides so .group-papers shows numbered list and keeps inline links */
+.search-groups .group-papers {
+  list-style-type: decimal !important;
+  margin: 0 0 0 1.5em !important;
+  padding: 0 !important;
+  list-style-position: outside !important;
+}
+.search-groups .group-papers li {
+  float: none !important;
+  display: list-item !important;
+  margin: 0 0 0.45em 0 !important;
+  padding: 0 !important;
+
+  text-indent: 0 !important;
+}
+.search-groups .group-papers li a {
+  display: inline !important;
+  padding: 0 !important;
+  vertical-align: baseline;
+}
+.search-groups .group-papers li .paper-meta {
+  display: inline !important;
+  margin-left: 6px;
+  color: #eaeaea;
+  font-size: 0.95em;
+}

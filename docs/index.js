@@ -7,7 +7,7 @@
   // VERY IMPORTANT THAT THIS FILE PATH IS ACCURATE
   // database_location: the path to the project repo CSV file (relative to the top of the Github repo)
   var config = {
-    database_location: '../Project_Database.csv',
+    database_location: '/Project_Database.csv',
   };
 
   window.databaseRecords = [];
@@ -85,44 +85,91 @@
       return;
     }
 
-    // This is where everything gets formatted.
     $out.append($('<h3></h3>').text("Search Results for '" + term + "':"));
-    var $ul = $('<ul></ul>');
+
+    // Group results strictly by normalized Data_Accession
+    var groups = {};
     results.forEach(function (r) {
-      var accession = r['Data_Accession'] || '';
-      var dname = r['Data_Name'] || '';
-      var metadata = r['Data_Metadata'] || '';
-      var ptitle = r['Paper_Title'] || '';
-      var pyear = r['Paper_Year'] || '';
-      var ptype = r['Paper_Type'] || '';
-      var plink = r['Paper_Link'] || '';
-
-      var $li = $('<li></li>');
-      var $top = $('<div></div>');
-      $top.append($('<strong></strong>').text('Dataset Accession: '))
-          .append(document.createTextNode(accession + '  '))
-          .append($('<strong></strong>').text('Dataset Name: '))
-          .append(document.createTextNode(dname + '  '))
-          .append($('<a></a>').attr('href', ('../' + metadata)).attr('target','_blank').text('Download metadata'));
-      $li.append($top);
-
-      var $meta = $('<div></div>');
-      $meta.append($('<strong></strong>').text('Manuscript Title: '))
-           .append(document.createTextNode(ptitle));
-      $meta.append(' ');
-      $meta.append($('<strong></strong>').text('Year: '))
-           .append(document.createTextNode(pyear + ' '));
-      $meta.append($('<strong></strong>').text('Type: '))
-           .append(document.createTextNode(ptype + ' '));
-      if (plink) {
-        $meta.append($('<a></a>').attr('href', plink).attr('target','_blank').text('Link to paper'));
-      }
-      $li.append($meta);
-      $ul.append($li);
+      var raw = (r['Data_Accession'] || '').toString();
+      var acc = raw.trim().toLowerCase();
+      var key = acc || '__no_accession__';
+      (groups[key] = groups[key] || []).push(r);
     });
-    $out.append($ul);
-  }
 
+    // Debugging: show totals in console to confirm grouping behavior
+    Object.keys(groups).forEach(function(k){ console.log(' group', k, 'count', groups[k].length); });
+
+    var $container = $('<div class="search-groups"></div>');
+    Object.keys(groups).forEach(function (key) {
+      var grp = groups[key];
+      var first = grp[0] || {};
+      var accession = first['Data_Accession'] || '';
+      var dname = first['Data_Name'] || '';
+      var metadata = first['Data_Metadata'] || '';
+
+      // Header is created once per group (per accession)
+      var $group = $('<div class="result-group"></div>');
+      var $header = $('<div class="group-header" style="font-size: 1.2em;"></div>');
+      $header.append($('<strong></strong>').text('Dataset Accession: '))
+            .append(document.createTextNode(accession || '(no accession)'))
+            .append(document.createTextNode('  '))
+            .append($('<strong></strong>').text('Dataset Name: '))
+            .append(document.createTextNode(dname || '(no name)'))
+            .append(document.createTextNode('  '));
+      if (metadata) {
+        $header.append($('<a style="color:rgb(154, 189, 245);"></a>').attr('href', ('../' + metadata)).attr('target','_blank').text('Download metadata'));
+      }
+      $group.append('<br>').append($header).append('<br>');
+
+      // Papers list inside the group
+      var $papers = $('<ol class="group-papers" style="font-size: 1em;"></ol>');
+      grp.forEach(function (r) {
+        var ptitle = r['Paper_Title'] || '';
+        var pyear = r['Paper_Year'] || '';
+        var ptype = r['Paper_Type'] || '';
+        var plink = r['Paper_Link'] || '';
+        var doi = r['Paper_DOI'] || '';
+
+        var $li = $('<li></li>');
+        var titleText = ptitle || doi || 'Untitled';
+        var $titleElem;
+
+        // create title element (link if possible, otherwise plain span)
+        if (plink) {
+          $titleElem = $('<a></a>')
+            .attr({ href: plink, target: '_blank', rel: 'noopener noreferrer' })
+            .text(titleText);
+        } else if (doi) {
+          var doiUrl = (/^https?:\/\//i).test(doi) ? doi : ('https://doi.org/' + doi);
+          $titleElem = $('<a style="color:rgb(111, 163, 248);"></a>')
+            .attr({ href: doiUrl, target: '_blank', rel: 'noopener noreferrer' })
+            .text(titleText);
+        } else {
+          $titleElem = $('<span></span>').text(titleText);
+        }
+
+        $li.append($titleElem);
+
+        // append year and type as inline text immediately after the title
+        var metaParts = [];
+        if (pyear) metaParts.push(String(pyear));
+        if (ptype) metaParts.push(String(ptype));
+        if (metaParts.length) {
+          // append a small inline span for the metadata so it stays on the same line
+          $li.append(' ').append(
+            $('<span class="paper-meta"></span>').text('\u2014 ' + metaParts.join(' | '))
+          );
+        }
+
+        $papers.append($li);
+      });
+
+      $group.append($papers);
+      $container.append($group);
+    });
+
+    $out.append($container);
+  }
   // Two ways to run the search: press Search or Enter.
 
   // This runs the search function when the user clicks the search button.
